@@ -8,6 +8,7 @@ Using the fine example offered by https://github.com/trestletech and http://www.
 I do not have the ability to host on http://glimmer.rstudio.com for a web example.  Until I get that, you can download the files, and then in R:
 
   require(shiny)
+
   runApp("C:\\path-to-download-location\\shiny-d3-plot")
 
 Unfortunately, my javascript and d3 abilities are weak, so hopefully those knowledgeable in those areas can build something way better than this simple example.

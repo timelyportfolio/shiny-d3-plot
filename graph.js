@@ -1,14 +1,5 @@
 <style>
 
-.node {
-  stroke: #fff;
-  stroke-width: 1.5px;
-}
-
-.link {
-  stroke: #999;
-  stroke-opacity: .6;
-}
 
 </style>
 
@@ -19,9 +10,9 @@
       return $(scope).find('.shiny-network-output');
     },
     renderValue: function(el, data) {
-        var margin = {top: 20, right: 20, bottom: 20, left: 20},
-            width =  800 - margin.right - margin.left,
-            height = 600 - margin.top - margin.bottom;      
+        var margin = {top: 50, right: 20, bottom: 50, left: 20},
+            width =  800, // - margin.right - margin.left,
+            height = 600; // - margin.top - margin.bottom;      
 
         //remove the old graph
           var svg = d3.select(el).select("svg");
@@ -132,28 +123,33 @@
                         //.attr("height", function(d) { return height - y(d.perf); })
                         .style("fill", color(p.key))
                         .style("fill-opacity", 1e-6)                    
-                      .transition()
-                        .duration(duration)
-                        .style("fill-opacity", 0.8);
+                        //very grateful to http://blog.nextgenetics.net/demo/entry0032/ for help here on mouseover highlighting
+                        //another nice example http://bl.ocks.org/2164562
+                        .on('mouseover', function(d, i) {
+                             d3.select(this).style('fill','gray');
+                             statusText
+                                .text(p.key + " " + d.perf)
+                                .attr('fill',color(p.key))
+                                .attr("text-anchor", d.perf < 0 ? "begin" : "begin")
+                                .attr("x", x(d.date) + x1(p.key) + x.rangeBand() / 2 )
+                                .attr("y", y(d.perf))
+                                .attr("transform", d.perf < 0 ? "rotate(90 " + (x(d.date) + x1(p.key) + x.rangeBand() / 4 ) + "," +   y(d.perf) + ")" : "rotate(-90 " + (x(d.date) + x1(p.key) + x.rangeBand() / 4 ) + "," +   y(d.perf) + ")"); 
+                          })
+                          .on('mouseout', function(d,i) {
+                             statusText
+                                .text('');
+                             d3.select(this).style('fill',color(p.key));
+                          })
+                          .transition()
+                                .duration(duration)
+                                .style("fill-opacity", 1);
+
+                    
+                  var statusText = svg.append('svg:text');
                       
-                    d3.select(this).selectAll("text")
-                        .data(function(d) { return d.values; })
-                        .enter().append("text")
-                            .attr("class","barlabels")
-                            .attr("x", function(d) { return x(d.date) + x1(p.key) + x1.rangeBand() / 2 ; })
-                            .attr("y", function(d, i) { return y(d.perf) ; })
-                            .attr("text-anchor", "middle")                        
-                            .text(function(d) { return d.perf; })
-                            .style("fill-opacity", 1e-6)                    
-                       .transition()
-                        .duration(duration)
-                        .style("fill-opacity", 1);
                   });            
                         
-                    //svg.append("g")
-                    //    .attr("class", "x axis")
-                    //    .call(d3.svg.axis().scale(x).orient("bottom"));
-                    
+                
                     svg.append("g")
                         .attr("class", "y axis")
                         .call(yAxis);
